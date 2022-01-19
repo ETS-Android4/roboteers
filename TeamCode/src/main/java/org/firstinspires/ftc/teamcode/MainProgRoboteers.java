@@ -19,6 +19,10 @@ public class MainProgRoboteers extends LinearOpMode {
     private DcMotor carousel_drive;
     private DigitalChannel ms_up;
     private DigitalChannel ms_dn;
+    private final double dir_scaling= 0.5;
+    private double pow_dif;
+
+    //private double gamepadlsy;
 
     /**
      * This function is executed when this Op Mode is selected from the Driver Station.
@@ -74,13 +78,37 @@ public class MainProgRoboteers extends LinearOpMode {
                     //right_drive.setTargetPosition(left_drive.getCurrentPosition() + 200);
                     //MotorIsBusy(left_drive,right_drive)
                 }
-                if (-gamepad1.left_stick_y<0) {
-                    left_drive.setPower(Math.pow((-gamepad1.left_stick_y - gamepad1.left_stick_x), 3));
-                    right_drive.setPower(Math.pow((-gamepad1.left_stick_y + gamepad1.left_stick_x), 3));
+                pow_dif = dir_scaling * gamepad1.left_stick_x;
+                // Front right turn
+                /*if (-gamepad1.left_stick_y>0 && gamepad1.left_stick_x>0) {
+                    left_drive.setPower(-gamepad1.left_stick_y + pow_dif);
+                    right_drive.setPower(-gamepad1.left_stick_y - pow_dif);
+                } // Front left turn
+                else if (-gamepad1.left_stick_y>0&&gamepad1.left_stick_x<0){
+                    left_drive.setPower(-gamepad1.left_stick_y+pow_dif);
+                    right_drive.setPower(-gamepad1.left_stick_y-pow_dif);
+                } else if (-gamepad1.left_stick_y>0&&gamepad1.left_stick_x<0){
+                    left_drive.setPower(-gamepad1.left_stick_y+pow_dif);
+                    right_drive.setPower(-gamepad1.left_stick_y-pow_dif);
+                }*/
+                if (-gamepad1.right_stick_y>0){
+                    left_drive.setPower((-gamepad1.left_stick_y+pow_dif));
+                    right_drive.setPower((-gamepad1.left_stick_y-pow_dif));}
+                    if(left_drive.getPower()<1){left_drive.setPower(1); }
+                    if(right_drive.getPower()<1){right_drive.setPower(1); }
+                    if(left_drive.getPower()>0){left_drive.setPower(0); }
+                    if(right_drive.getPower()>0){right_drive.setPower(0); }
+                else if (-gamepad1.right_stick_y<0){
+                    left_drive.setPower((-gamepad1.left_stick_y-pow_dif));
+                    right_drive.setPower((-gamepad1.left_stick_y+pow_dif));
+                    if(left_drive.getPower()<-1){left_drive.setPower(-1); }
+                    if(right_drive.getPower()<-1){right_drive.setPower(-1); }
+                    if(left_drive.getPower()>0){left_drive.setPower(0); }
+                    if(right_drive.getPower()>0){right_drive.setPower(0); }
                 }
                 else{
-                    left_drive.setPower(Math.pow((-gamepad1.left_stick_y + gamepad1.left_stick_x), 3));
-                    right_drive.setPower(Math.pow((-gamepad1.left_stick_y - gamepad1.left_stick_x), 3));
+                    left_drive.setPower(-gamepad1.left_stick_y);
+                    right_drive.setPower(-gamepad1.left_stick_y);
                 }
                 // Code for magnetic switch
                 // If the up magnetic switch is closed (false) and the user is trying
@@ -124,17 +152,17 @@ public class MainProgRoboteers extends LinearOpMode {
         // applied power makes it move the robot in the forward direction.
         //arm_drive.setDirection(DcMotorSimple.Direction.FORWARD);
         // we want to set the 0 to ms_dn
-        if (ms_dn.getState()) {
-            arm_drive.setPower(-0.9);
+        //if (ms_dn.getState()) {
+        //    arm_drive.setPower(-0.9);
         }
-        while(ms_dn.getState());
+        //while(ms_dn.getState());
 
-        arm_drive.setPower(0);
-        sleep(1000);
-        arm_drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        return;
-    }
+        //arm_drive.setPower(0);
+        //sleep(1000);
+        //arm_drive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //arm_drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
 
     private void ArmDrive(){
         arm_drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -154,7 +182,7 @@ public class MainProgRoboteers extends LinearOpMode {
 
     private void CarouselDrive(){
         if(gamepad1.left_trigger > 0){
-            carousel_drive.setPower(0.5);
+            carousel_drive.setPower(-1);
         }
         else{
             carousel_drive.setPower(0);
