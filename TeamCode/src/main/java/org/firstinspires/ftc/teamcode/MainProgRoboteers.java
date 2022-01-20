@@ -19,8 +19,9 @@ public class MainProgRoboteers extends LinearOpMode {
     private DcMotor carousel_drive;
     private DigitalChannel ms_up;
     private DigitalChannel ms_dn;
-    private final double dir_scaling= 0.5;
+    private final double dir_scaling= 1.0;
     private double pow_dif;
+    private double L_Pow_C, R_Pow_C;
 
     //private double gamepadlsy;
 
@@ -92,25 +93,33 @@ public class MainProgRoboteers extends LinearOpMode {
                     left_drive.setPower(-gamepad1.left_stick_y+pow_dif);
                     right_drive.setPower(-gamepad1.left_stick_y-pow_dif);
                 }*/
-                if (-gamepad1.right_stick_y>0){
-                    left_drive.setPower((-gamepad1.left_stick_y+pow_dif));
-                    right_drive.setPower((-gamepad1.left_stick_y-pow_dif));}
-                    if(left_drive.getPower()<1){left_drive.setPower(1); }
-                    if(right_drive.getPower()<1){right_drive.setPower(1); }
-                    if(left_drive.getPower()>0){left_drive.setPower(0); }
-                    if(right_drive.getPower()>0){right_drive.setPower(0); }
-                else if (-gamepad1.right_stick_y<0){
-                    left_drive.setPower((-gamepad1.left_stick_y-pow_dif));
-                    right_drive.setPower((-gamepad1.left_stick_y+pow_dif));
-                    if(left_drive.getPower()<-1){left_drive.setPower(-1); }
-                    if(right_drive.getPower()<-1){right_drive.setPower(-1); }
-                    if(left_drive.getPower()>0){left_drive.setPower(0); }
-                    if(right_drive.getPower()>0){right_drive.setPower(0); }
+                if (-gamepad1.left_stick_y > 0) {
+                    L_Pow_C = -gamepad1.left_stick_y + pow_dif;
+                    R_Pow_C = -gamepad1.left_stick_y - pow_dif;
+                    
+                    //Following 2 lines don't make any sense
+                    // accidently put < instead
+                    if(L_Pow_C>1){L_Pow_C=1; }
+                    if(R_Pow_C>1){R_Pow_C=1; }
+                    if(L_Pow_C<0){L_Pow_C=0; }
+                    if(R_Pow_C<0){R_Pow_C=0; }
+                    //New code added by Anmol
+
+                } else if (-gamepad1.left_stick_y < 0) {
+                    L_Pow_C = -gamepad1.left_stick_y - pow_dif;
+                    R_Pow_C = -gamepad1.left_stick_y + pow_dif;
+                    if(L_Pow_C<-1){L_Pow_C=-1; }
+                    if(R_Pow_C<-1){R_Pow_C=-1; }
+                    if(L_Pow_C>0){L_Pow_C=0; }
+                    if(R_Pow_C>0){R_Pow_C=0; }
+                } else {
+                    L_Pow_C = -gamepad1.left_stick_y;
+                    R_Pow_C = -gamepad1.left_stick_y;
                 }
-                else{
-                    left_drive.setPower(-gamepad1.left_stick_y);
-                    right_drive.setPower(-gamepad1.left_stick_y);
-                }
+
+                left_drive.setPower(Math.pow(L_Pow_C, 3));
+                right_drive.setPower(Math.pow(R_Pow_C, 3));
+                
                 // Code for magnetic switch
                 // If the up magnetic switch is closed (false) and the user is trying
                 // to go up, don't allow to proceed further.
@@ -123,8 +132,10 @@ public class MainProgRoboteers extends LinearOpMode {
                     grab_servo.setPosition(0.5); //claw is open
                 }
 
-                telemetry.addData("Left Pow", left_drive.getPower());
-                telemetry.addData("Right Pow", right_drive.getPower());
+                telemetry.addData("Left Pow", L_Pow_C);
+                telemetry.addData("Right Pow", R_Pow_C);
+                telemetry.addData("LSY", -gamepad1.left_stick_y);
+
                 telemetry.addData("ARM Pow", arm_drive.getPower());
                 telemetry.addData("Servo Pos", grab_servo.getPosition());
                 telemetry.addData("Arm Pos", arm_drive.getCurrentPosition());

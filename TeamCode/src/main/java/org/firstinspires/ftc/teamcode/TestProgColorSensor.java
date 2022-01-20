@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "usethisdrivercontrolblue_imported")
+@TeleOp(name = "TestProgColorSensor")
 public class TestProgColorSensor extends LinearOpMode {
 
     private DcMotor right_drive;
